@@ -8,30 +8,22 @@
 import SwiftUI
 import CoreData
 struct AddItem: View {
-    @Environment(\.managedObjectContext) var moc
-    @FetchRequest(sortDescriptors: []) var listItems : FetchedResults<ListItem>
-    @State var backToDoListView : Bool = false
-    @State var textItem : String = ""
+    
+    @State private var addItemController = AddItemController()
+    @State private var itemModel = ItemModel()
+    
     var body: some View {
         NavigationView{
             ScrollView{
                 VStack{
-                    TextField("add to do", text: $textItem)
+                    TextField("add to do", text: $itemModel.textItem)
                         .padding(.horizontal)
                         .frame(height: 80)
                         .background(Color(.white))
                         .cornerRadius(10)
                     
                     Button(action: {
-                       /* let item = ListItem(context: moc)
-                        item.id = UUID()
-                        item.desc = textItem
-                        do{
-                            try moc.save()
-                            self.backToDoListView = true 
-                        }catch{
-                            
-                        }*/
+                        addItemController.itemSave()
                        
                     }, label: {
                         Text("save".uppercased())
@@ -41,13 +33,20 @@ struct AddItem: View {
                             .background(Color(.blue))
                             .cornerRadius(10)
                     })
-                    NavigationLink( destination: ToDoList(), isActive: $backToDoListView){
+                    NavigationLink( destination: ToDoList(), isActive: $itemModel.backToDoListView){
                         EmptyView()
                     }
                 }.padding(14)
+                    .toolbar {
+                        ToolbarItem(placement: ToolbarItemPlacement.navigationBarLeading) {
+                            NavigationLink(destination: ToDoList(), label: {
+                                Image(systemName: "chevron.backward")})
+                        }
+                        
+                    }
                 
             }.navigationTitle("add item 🚀")
-        }
+        }.navigationBarBackButtonHidden(true)
        
     }
 }
